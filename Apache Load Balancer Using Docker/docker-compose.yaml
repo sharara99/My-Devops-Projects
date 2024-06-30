@@ -5,34 +5,31 @@ services:
     image: httpd:latest
     container_name: apache_1
     ports:
-      - "8081:80"
-    deploy:
-      resources:
-        limits:
-          cpus: "0.50"
-          memory: "512M"
-        reservations:
-          cpus: "0.25"
-          memory: "256M"
+      - "8081:80"  # Map port 80 of apache_1 to port 8081 on the host
+    networks:
+      - webnet  # Connect to the 'webnet' network
 
   apache_2:
     image: httpd:latest
     container_name: apache_2
     ports:
-      - "8082:80"
-    deploy:
-      resources:
-        limits:
-          cpus: "0.50"
-          memory: "512M"
-        reservations:
-          cpus: "0.25"
-          memory: "256M"
+      - "8082:80"  # Map port 80 of apache_2 to port 8082 on the host
+    networks:
+      - webnet  # Connect to the 'webnet' network
 
   haproxy:
     image: haproxy:latest
     container_name: haproxy
     ports:
-      - "90:80"
+      - "90:80"  # Map port 80 of haproxy to port 90 on the host
     volumes:
-      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg  # Mount the HAProxy config file
+    depends_on:
+      - apache_1
+      - apache_2
+    networks:
+      - webnet  # Connect to the 'webnet' network
+
+networks:
+  webnet:
+    driver: bridge  # Use bridge network driver
