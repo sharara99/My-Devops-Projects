@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  apache_1:
+    image: httpd:latest
+    container_name: apache_1
+    ports:
+      - "8081:80"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "512M"
+        reservations:
+          cpus: "0.25"
+          memory: "256M"
+
+  apache_2:
+    image: httpd:latest
+    container_name: apache_2
+    ports:
+      - "8082:80"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "512M"
+        reservations:
+          cpus: "0.25"
+          memory: "256M"
+
+  haproxy:
+    image: haproxy:latest
+    container_name: haproxy
+    ports:
+      - "90:80"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
